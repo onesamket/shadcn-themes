@@ -175,12 +175,18 @@ function ThemeEditor() {
   );
 }
 ```
-
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!
-Open an issue or submit a pull request on GitHub.
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 🔗 Links
+
+- [Documentation](https://shadcn-themes.vercel.app)
+- [GitHub](https://github.com/onesamket/shadcn-themes)
+- [NPM](https://www.npmjs.com/package/shadcn-themes)
 
 ---
+
+Built with ❤️ using OKLCH color space for  shadcn/ui
