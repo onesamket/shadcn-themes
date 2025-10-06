@@ -1,6 +1,6 @@
 {
   "name": "shadcn-themes",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A comprehensive theme library for shadcn/ui with 30+ pre-built themes using OKLCH color space",
   "type": "module",
   "main": "./dist/index.js",

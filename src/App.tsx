@@ -1,3 +1,4 @@
+"use client"
 
 import { useState } from "react"
 import { Sidebar } from "./components/sidebar"
@@ -5,6 +6,8 @@ import { Overview } from "./components/sections/overview"
 import { Themes } from "./components/sections/themes"
 import { Installation } from "./components/sections/installation"
 import { Usage } from "./components/sections/usage"
+import { ApiReference } from "./components/sections/api-reference"
+import { Troubleshooting } from "./components/sections/troubleshooting"
 import { ThemeProvider } from "./components/contexts/theme-provider"
 import { ThemeSwitcher } from "./components/theme/switcher"
 
@@ -21,6 +24,10 @@ function App() {
         return <Installation />
       case "usage":
         return <Usage />
+      case "api":
+        return <ApiReference />
+      case "troubleshooting":
+        return <Troubleshooting />
       default:
         return <Overview />
     }
@@ -33,7 +40,7 @@ function App() {
       enableFloatingSwitcher={true}
       floatPosition="bottom-right"
       enableSystem={false}
-      onThemeChange={(theme) => console.log(" Theme changed to:", theme)}
+      onThemeChange={(theme) => console.log("Theme changed to:", theme)}
     >
       <div className="flex min-h-screen">
         <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />

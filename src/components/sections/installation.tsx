@@ -161,10 +161,6 @@ function App() {
         </p>
         <CodeBlock code={floatingCode} language="typescript" filename="App.tsx" />
       </div>
-
-
-
-
     </div>
   )
 }
