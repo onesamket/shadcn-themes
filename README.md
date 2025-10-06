@@ -184,9 +184,3 @@ Contributions are welcome!
 Open an issue or submit a pull request on GitHub.
 
 ---
-
-## 📄 License
-
-**MIT**
-
----
