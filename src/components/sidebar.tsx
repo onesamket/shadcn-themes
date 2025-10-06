@@ -26,7 +26,8 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       {/* Mobile Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-md bg-sidebar text-sidebar-foreground lg:hidden"
+        aria-label={isOpen ? "Close menu" : "Open menu"}
+        className="fixed top-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-md bg-sidebar text-sidebar-foreground shadow-lg lg:hidden"
       >
         {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
@@ -34,7 +35,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 border-r border-sidebar-border bg-sidebar transition-transform lg:translate-x-0",
+          "fixed left-0 top-0 z-40 h-screen w-64 border-r border-sidebar-border bg-sidebar transition-transform duration-300 ease-in-out lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -56,6 +57,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
                     onSectionChange(section.id)
                     setIsOpen(false)
                   }}
+                  aria-current={activeSection === section.id ? "page" : undefined}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                     activeSection === section.id
@@ -81,8 +83,9 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm transition-opacity lg:hidden"
           onClick={() => setIsOpen(false)}
+          aria-label="Close menu"
         />
       )}
     </>

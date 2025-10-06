@@ -10,6 +10,8 @@ function App() {
     <ThemeProvider 
       defaultTheme="dark" 
       storageKey="app-theme"
+      enableFloatingSwitcher={true}  // Enable built-in switcher
+      floatPosition="bottom-right"
     >
       {/* Your app components */}
     </ThemeProvider>
@@ -38,6 +40,24 @@ function ThemeSwitcher() {
         ))}
       </select>
     </div>
+  )
+}`
+
+  const typeSafeUsage = `import { ThemeProvider } from 'shadcn-themes'
+import type { ThemeValue } from 'shadcn-themes'
+
+function App() {
+  // TypeScript will autocomplete valid theme values!
+  const defaultTheme: ThemeValue = "dark" 
+  // const invalid: ThemeValue = "invalid" 
+
+  return (
+    <ThemeProvider 
+      defaultTheme={defaultTheme}
+      storageKey="app-theme"
+    >
+      {/* Your app components */}
+    </ThemeProvider>
   )
 }`
 
@@ -137,15 +157,13 @@ function ThemeGallery() {
           onClick={() => setTheme(theme.value)}
         >
           <div className="mb-2 flex gap-2">
-            {Object.entries(theme.colors.tokens)
-              .slice(0, 5)
-              .map(([key, value]) => (
-                <div
-                  key={key}
-                  className="h-8 w-8 rounded"
-                  style={{ background: value }}
-                />
-              ))}
+            {theme.colors.preview.map((color, i) => (
+              <div
+                key={i}
+                className="h-8 w-8 rounded"
+                style={{ background: color }}
+              />
+            ))}
           </div>
           <h3 className="font-semibold">{theme.name}</h3>
           <p className="text-sm text-muted-foreground">
@@ -194,8 +212,10 @@ function ExportThemeCode() {
 import type { 
   ThemeConfig,      // Theme configuration type
   ThemeTokens,      // Color tokens type
-  ThemeTokenKey     // Token keys union
-  } from 'shadcn-themes'
+  ThemeTokenKey,    // Token keys union
+  ThemeValue,       // Valid theme values (autocomplete!)
+  ThemeName         // Valid theme names (autocomplete!)
+} from 'shadcn-themes'
 
 // Example: Type-safe theme creation
 const myTheme: ThemeConfig = {
@@ -232,17 +252,20 @@ const myTheme: ThemeConfig = {
       sidebarAccentForeground: 'oklch(0.95 0 0)',
       sidebarBorder: 'oklch(0.24 0 0)',
       sidebarRing: 'oklch(0.65 0.25 265)',
-      
     }
   }
-}`
+}
+
+
+
+`
 
   return (
     <div className="space-y-8">
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Usage Guide</h1>
         <p className="text-lg text-muted-foreground">
-          Learn how to integrate and customize themes in your application with the context-based API.
+          Learn how to integrate and customize themes in your application with full TypeScript support and autocomplete.
         </p>
       </div>
 
@@ -250,61 +273,69 @@ const myTheme: ThemeConfig = {
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold">1. Setup ThemeProvider</h2>
         <p className="text-muted-foreground">
-          Wrap your app with ThemeProvider to enable theme management throughout your component tree.
+          Wrap your app with ThemeProvider to enable theme management. The switcher can be enabled directly in the
+          provider!
         </p>
         <CodeBlock code={contextUsage} language="tsx" filename="App.tsx" />
       </div>
 
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">2. Type-Safe Theme Selection</h2>
+        <p className="text-muted-foreground">Get full autocomplete support for theme values with TypeScript.</p>
+        <CodeBlock code={typeSafeUsage} language="tsx" filename="App.tsx" />
+      </div>
+
       {/* Hook Usage */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">2. Use the useTheme Hook</h2>
+        <h2 className="text-2xl font-semibold">3. Use the useTheme Hook</h2>
         <p className="text-muted-foreground">
           Access themes and theme functions from any component using the useTheme hook.
         </p>
-        <CodeBlock code={hookUsage} language="tsx" filename="App.tsx" />
+        <CodeBlock code={hookUsage} language="tsx" filename="ThemeSwitcher.tsx" />
       </div>
 
       {/* Custom Trigger */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">3. Build Custom Theme Switchers</h2>
+        <h2 className="text-2xl font-semibold">4. Build Custom Theme Switchers</h2>
         <p className="text-muted-foreground">
           Create your own theme switcher UI using the exposed hooks and utilities.
         </p>
-        <CodeBlock code={customTrigger} language="tsx" filename="App.tsx" />
+        <CodeBlock code={customTrigger} language="tsx" filename="CustomThemeSwitcher.tsx" />
       </div>
 
       {/* Custom Accent */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">4. Custom Accent Colors</h2>
+        <h2 className="text-2xl font-semibold">5. Custom Accent Colors</h2>
         <p className="text-muted-foreground">
-          Allow users to customize theme accent colors with hue and saturation controls.
+          Allow users to customize theme accent colors with hue and chroma controls.
         </p>
-        <CodeBlock code={customAccent} language="tsx" filename="App.tsx" />
+        <CodeBlock code={customAccent} language="tsx" filename="ThemeEditor.tsx" />
       </div>
 
       {/* Theme Gallery */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">5. Build a Theme Gallery</h2>
+        <h2 className="text-2xl font-semibold">6. Build a Theme Gallery</h2>
         <p className="text-muted-foreground">Create a visual theme gallery page using the exported themes array.</p>
-        <CodeBlock code={themeGallery} language="tsx" filename="App.tsx" />
+        <CodeBlock code={themeGallery} language="tsx" filename="ThemeGallery.tsx" />
       </div>
 
       {/* Export Theme */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">6. Export Theme Code</h2>
+        <h2 className="text-2xl font-semibold">7. Export Theme Code</h2>
         <p className="text-muted-foreground">
           Allow users to export CSS variables for any theme to use in their own projects.
         </p>
-        <CodeBlock code={exportTheme} language="tsx" filename="App.tsx" />
+        <CodeBlock code={exportTheme} language="tsx" filename="ExportTheme.tsx" />
       </div>
 
       {/* TypeScript */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">7. TypeScript Support</h2>
-        <p className="text-muted-foreground">All exports are fully typed for a great developer experience.</p>
-        <CodeBlock code={typeScript} language="ts" filename="App.tsx" />
+        <h2 className="text-2xl font-semibold">8. Full TypeScript Support</h2>
+        <p className="text-muted-foreground">
+          All exports are fully typed with autocomplete for theme values and names.
+        </p>
+        <CodeBlock code={typeScript} language="ts" filename="types.ts" />
       </div>
-
     </div>
   )
 }

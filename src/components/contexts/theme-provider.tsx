@@ -1,38 +1,47 @@
-import { themes } from "@/constants/themes";
-import { applyTheme, getSystemTheme } from "@/lib/themes";
+"use client"
 
-import type { ThemeConfig } from "@/types/theme";
-import { useEffect, useState, type ReactNode } from "react";
-import { ThemeContext, type CustomAccent, type ThemeContextValue } from "./theme-context";
+import { themes, type ThemeValue } from "@/constants/themes"
+import { applyTheme, getSystemTheme } from "@/lib/themes"
+
+import type { ThemeConfig } from "@/types/theme"
+import { useEffect, useState, type ReactNode } from "react"
+import { ThemeContext, type CustomAccent, type ThemeContextValue } from "./theme-context"
+import { ThemeSwitcher } from "../theme/switcher"
 
 export interface ThemeProviderProps {
-    children: ReactNode;
+    children: ReactNode
 
-    // Basic configuration
-    defaultTheme?: string;
-    storageKey?: string;
+    /** Initial theme to use (must be a valid theme value for autocomplete) */
+    defaultTheme?: ThemeValue
+    /** LocalStorage key for persisting theme selection */
+    storageKey?: string
 
-    // Floating switcher configuration
-    enableFloatingSwitcher?: boolean;
-    floatPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+    /** Enable the floating theme switcher UI */
+    enableFloatingSwitcher?: boolean
+    /** Position of the floating switcher */
+    floatPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right"
 
-    // Advanced options
-    enableSystem?: boolean;
-    disableTransitionOnChange?: boolean;
-    attribute?: string;
-    themes?: ThemeConfig[];
+    /** Enable system theme detection */
+    enableSystem?: boolean
+    /** Disable CSS transitions when changing themes */
+    disableTransitionOnChange?: boolean
+    /** HTML attribute to set on root element */
+    attribute?: string
+    /** Custom theme configurations (overrides default themes) */
+    themes?: readonly ThemeConfig[]
 
-    // Callbacks
-    onThemeChange?: (theme: string) => void;
+    /** Callback fired when theme changes */
+    onThemeChange?: (theme: string) => void
 
-    // Custom accent defaults
-    defaultCustomAccent?: CustomAccent;
+    /** Default custom accent configuration */
+    defaultCustomAccent?: CustomAccent
 }
 
 export function ThemeProvider({
     children,
     defaultTheme = "dark",
     storageKey = "theme",
+    enableFloatingSwitcher = false,
     floatPosition = "bottom-right",
     enableSystem = false,
     disableTransitionOnChange = false,
@@ -41,156 +50,148 @@ export function ThemeProvider({
     onThemeChange,
     defaultCustomAccent = { hue: 265, chroma: 0.25 },
 }: ThemeProviderProps) {
-    const [currentTheme, setCurrentTheme] = useState<string>(defaultTheme);
-    const [isCustom, setIsCustom] = useState(false);
-    const [customAccent, setCustomAccent] = useState<CustomAccent>(defaultCustomAccent);
+    const [currentTheme, setCurrentTheme] = useState<string>(defaultTheme)
+    const [isCustom, setIsCustom] = useState(false)
+    const [customAccent, setCustomAccent] = useState<CustomAccent>(defaultCustomAccent)
 
     // Use custom themes if provided, otherwise use default themes
-    const themeList = customThemes || themes;
+    const themeList = customThemes || themes
 
     // Load saved theme on mount
     useEffect(() => {
-        const savedTheme = localStorage.getItem(storageKey);
-        const savedCustomHue = localStorage.getItem(`${storageKey}-custom-hue`);
-        const savedCustomChroma = localStorage.getItem(`${storageKey}-custom-chroma`);
-        const savedIsCustom = localStorage.getItem(`${storageKey}-is-custom`);
+        const savedTheme = localStorage.getItem(storageKey)
+        const savedCustomHue = localStorage.getItem(`${storageKey}-custom-hue`)
+        const savedCustomChroma = localStorage.getItem(`${storageKey}-custom-chroma`)
+        const savedIsCustom = localStorage.getItem(`${storageKey}-is-custom`)
 
         if (enableSystem && !savedTheme) {
-            const systemTheme = getSystemTheme();
-            const theme = themeList.find((t) => t.value === systemTheme);
+            const systemTheme = getSystemTheme()
+            const theme = themeList.find((t) => t.value === systemTheme)
             if (theme) {
-                applyTheme(theme);
-                setCurrentTheme(systemTheme);
+                applyTheme(theme)
+                setCurrentTheme(systemTheme)
             }
-            return;
+            return
         }
 
         if (savedTheme) {
-            const theme = themeList.find((t) => t.value === savedTheme);
+            const theme = themeList.find((t) => t.value === savedTheme)
             if (theme) {
                 if (savedIsCustom === "true" && savedCustomHue && savedCustomChroma) {
                     const accent = {
                         hue: Number(savedCustomHue),
                         chroma: Number(savedCustomChroma),
-                    };
-                    applyThemeWithCustomAccent(theme, accent);
-                    setCustomAccent(accent);
-                    setIsCustom(true);
+                    }
+                    applyThemeWithCustomAccent(theme, accent)
+                    setCustomAccent(accent)
+                    setIsCustom(true)
                 } else {
-                    applyTheme(theme);
+                    applyTheme(theme)
                 }
-                setCurrentTheme(savedTheme);
+                setCurrentTheme(savedTheme)
             }
         } else {
             // Apply default theme
-            const theme = themeList.find((t) => t.value === defaultTheme);
+            const theme = themeList.find((t) => t.value === defaultTheme)
             if (theme) {
-                applyTheme(theme);
+                applyTheme(theme)
             }
         }
-    }, [defaultTheme, storageKey, enableSystem, themeList]);
+    }, [defaultTheme, storageKey, enableSystem, themeList])
 
     // System theme listener
     useEffect(() => {
-        if (!enableSystem) return;
+        if (!enableSystem) return
 
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
         const handleChange = (e: MediaQueryListEvent) => {
-            const systemTheme = e.matches ? "dark" : "light";
-            const theme = themeList.find((t) => t.value === systemTheme);
+            const systemTheme = e.matches ? "dark" : "light"
+            const theme = themeList.find((t) => t.value === systemTheme)
             if (theme) {
-                applyTheme(theme);
-                setCurrentTheme(systemTheme);
-                onThemeChange?.(systemTheme);
+                applyTheme(theme)
+                setCurrentTheme(systemTheme)
+                onThemeChange?.(systemTheme)
             }
-        };
+        }
 
-        mediaQuery.addEventListener("change", handleChange);
-        return () => mediaQuery.removeEventListener("change", handleChange);
-    }, [enableSystem, themeList, onThemeChange]);
+        mediaQuery.addEventListener("change", handleChange)
+        return () => mediaQuery.removeEventListener("change", handleChange)
+    }, [enableSystem, themeList, onThemeChange])
 
     const applyThemeWithCustomAccent = (theme: ThemeConfig, accent: CustomAccent) => {
-        const root = document.documentElement;
-        const tokens = theme.colors.tokens;
+        const root = document.documentElement
+        const tokens = theme.colors.tokens
 
         if (disableTransitionOnChange) {
-            root.style.setProperty("transition", "none");
+            root.style.setProperty("transition", "none")
         }
 
         Object.entries(tokens).forEach(([key, value]) => {
-            const cssVar = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+            const cssVar = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`
 
             // Apply custom accent to primary colors
-            if (
-                key === "primary" ||
-                key === "ring" ||
-                key === "sidebarPrimary" ||
-                key === "sidebarRing"
-            ) {
-                const lightnessMatch = value.match(/oklch\(([\d.]+)/);
-                const lightness = lightnessMatch ? lightnessMatch[1] : "0.65";
-                root.style.setProperty(
-                    cssVar,
-                    `oklch(${lightness} ${accent.chroma} ${accent.hue})`,
-                );
+            if (key === "primary" || key === "ring" || key === "sidebarPrimary" || key === "sidebarRing") {
+                const lightnessMatch = value.match(/oklch\(([\d.]+)/)
+                const lightness = lightnessMatch ? lightnessMatch[1] : "0.65"
+                root.style.setProperty(cssVar, `oklch(${lightness} ${accent.chroma} ${accent.hue})`)
             } else {
-                root.style.setProperty(cssVar, value);
+                root.style.setProperty(cssVar, value)
             }
-        });
+        })
 
-        root.setAttribute(attribute, theme.value);
-        root.className = theme.value;
+        root.setAttribute(attribute, theme.value)
+        root.className = theme.value
 
         // Re-enable transitions
         if (disableTransitionOnChange) {
             setTimeout(() => {
-                root.style.removeProperty("transition");
-            }, 0);
+                root.style.removeProperty("transition")
+            }, 0)
         }
-    };
+    }
 
     const setTheme = (themeValue: string) => {
-        const theme = themeList.find((t) => t.value === themeValue);
-        if (!theme) return;
+        const theme = themeList.find((t) => t.value === themeValue)
+        if (!theme) return
 
         if (isCustom) {
-            applyThemeWithCustomAccent(theme, customAccent);
+            applyThemeWithCustomAccent(theme, customAccent)
         } else {
-            applyTheme(theme);
+            applyTheme(theme)
         }
 
-        setCurrentTheme(themeValue);
-        localStorage.setItem(storageKey, themeValue);
-        onThemeChange?.(themeValue);
-    };
+        setCurrentTheme(themeValue)
+        localStorage.setItem(storageKey, themeValue)
+        onThemeChange?.(themeValue)
+    }
 
     const applyCustomAccent = (hue: number, chroma: number) => {
-        const theme = themeList.find((t) => t.value === currentTheme);
-        if (!theme) return;
+        const theme = themeList.find((t) => t.value === currentTheme)
+        if (!theme) return
 
-        const accent = { hue, chroma };
-        setCustomAccent(accent);
-        setIsCustom(true);
-        applyThemeWithCustomAccent(theme, accent);
+        const accent = { hue, chroma }
+        setCustomAccent(accent)
+        setIsCustom(true)
+        applyThemeWithCustomAccent(theme, accent)
 
-        localStorage.setItem(`${storageKey}-custom-hue`, hue.toString());
-        localStorage.setItem(`${storageKey}-custom-chroma`, chroma.toString());
-        localStorage.setItem(`${storageKey}-is-custom`, "true");
-    };
+        localStorage.setItem(`${storageKey}-custom-hue`, hue.toString())
+        localStorage.setItem(`${storageKey}-custom-chroma`, chroma.toString())
+        localStorage.setItem(`${storageKey}-is-custom`, "true")
+    }
 
     const resetCustomAccent = () => {
-        const theme = themeList.find((t) => t.value === currentTheme);
-        if (!theme) return;
+        const theme = themeList.find((t) => t.value === currentTheme)
+        if (!theme) return
 
-        setIsCustom(false);
-        applyTheme(theme);
+        setIsCustom(false)
+        applyTheme(theme)
 
-        localStorage.setItem(`${storageKey}-is-custom`, "false");
-    };
+        localStorage.setItem(`${storageKey}-is-custom`, "false")
+    }
 
     const getCurrentThemeConfig = () => {
-        return themeList.find((t) => t.value === currentTheme);
-    };
+        return themeList.find((t) => t.value === currentTheme)
+    }
 
     const value: ThemeContextValue = {
         currentTheme,
@@ -199,14 +200,17 @@ export function ThemeProvider({
         setTheme,
         applyCustomAccent,
         resetCustomAccent,
-        themes: themeList,
+        themes: themeList as ThemeConfig[],
         floatPosition,
         getCurrentThemeConfig,
-    };
+    }
 
     return (
-        <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-    );
+        <ThemeContext.Provider value={value}>
+            {children}
+            {enableFloatingSwitcher && <ThemeSwitcher usePortal />}
+        </ThemeContext.Provider>
+    )
 }
 
-export default ThemeProvider;
+export default ThemeProvider
