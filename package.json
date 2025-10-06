@@ -1,6 +1,6 @@
 {
   "name": "shadcn-themes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive theme library for shadcn/ui with 30+ pre-built themes using OKLCH color space",
   "type": "module",
   "main": "./dist/index.js",
@@ -34,12 +34,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your/repo.git"
+    "url": "git+https://github.com/onesamket/shadcn-themes.git"
   },
   "bugs": {
-    "url": "https://github.com/your/repo/issues"
+    "url": "https://github.com/onesamket/shadcn-themes/issues"
   },
-  "homepage": "https://github.com/your/repo#readme",
+  "homepage": "https://github.com/onesamket/shadcn-themes#readme",
   "peerDependencies": {
     "react": "^18 || ^19",
     "react-dom": "^18 || ^19"
