@@ -17,6 +17,10 @@ A comprehensive, context-based theme library for **shadcn/ui** with **30+ pre-bu
 
 ---
 
+## First Step
+
+Initialize a shadcn/ui Project
+
 ## 📦 Installation
 
 ```bash
