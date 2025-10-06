@@ -6,7 +6,7 @@ import { Themes } from "./components/sections/themes"
 import { Installation } from "./components/sections/installation"
 import { Usage } from "./components/sections/usage"
 import { ThemeProvider } from "./components/contexts/theme-provider"
-import { ThemeSwitcher } from "./components/theme-switcher"
+import { ThemeSwitcher } from "./components/theme/switcher"
 
 function App() {
   const [activeSection, setActiveSection] = useState("overview")
@@ -40,7 +40,7 @@ function App() {
         <main className="flex-1 lg:pl-64">
           <div className="mx-auto max-w-5xl px-6 py-12 lg:px-12 lg:py-16">{renderSection()}</div>
         </main>
-        <ThemeSwitcher />
+        <ThemeSwitcher usePortal />
       </div>
     </ThemeProvider>
   )

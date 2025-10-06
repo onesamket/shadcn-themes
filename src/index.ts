@@ -11,7 +11,7 @@ export type { ThemeConfig, } from "@/types/theme"
 export  type { ThemeValue, ThemeTokens, ThemeTokenKey} from "./constants/themes"
 
 // Components
-export { ThemeSwitcher } from "./components/theme-switcher"
+export { ThemeSwitcher } from "./components/theme/switcher"
 
 // Utilities
 export { cn } from "./lib/utils"
